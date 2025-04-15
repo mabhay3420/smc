@@ -1,0 +1,223 @@
+#!/bin/bash
+# SMC driver script
+# Provides a simple interface for configuring, building, running, and testing the SMC project
+
+set -e  # Exit on error
+
+# Define colors for output
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+RED='\033[0;31m'
+YELLOW='\033[0;33m'
+NC='\033[0m' # No Color
+
+# Script name for usage info
+SCRIPT_NAME=$(basename "$0")
+
+# Project root directory (assuming the script is in the project root)
+PROJECT_ROOT=$(pwd)
+
+# All supported build modes
+SUPPORTED_MODES=("release" "debug")
+
+# Print usage information
+function print_usage() {
+    echo -e "${BLUE}SMC Driver - Helper script for SMC project${NC}"
+    echo ""
+    echo -e "Usage: ${SCRIPT_NAME} -c|-b|-r|-t [mode]"
+    echo ""
+    echo -e "Options:"
+    echo -e "  -c [mode]       Configure project "
+    echo -e "  -b [mode]       Build project "
+    echo -e "  -r [mode]       Run the project "
+    echo -e "  -t [mode]       Run tests "
+    echo -e "  -h              Display this help message"
+    echo ""
+    echo -e "Modes:"
+    echo -e "  release                 Release mode (optimized)"
+    echo -e "  debug                   Debug mode (with debug symbols)"
+    echo ""
+    echo -e "Examples:"
+    echo -e "  ${SCRIPT_NAME} -c debug             Configure project in debug mode"
+    echo -e "  ${SCRIPT_NAME} -b release           Build project in release mode"
+    echo -e "  ${SCRIPT_NAME} -r debug             Run the debug binary"
+    echo -e "  ${SCRIPT_NAME} -t release           Run tests with release build"
+}
+
+# Validate the provided build mode
+function validate_mode() {
+    local mode="$1"
+    
+    for valid_mode in "${SUPPORTED_MODES[@]}"; do
+        if [ "${mode}" = "${valid_mode}" ]; then
+            return 0  # Mode is valid
+        fi
+    done
+    
+    echo -e "${RED}Error: Invalid mode '${mode}'.${NC}"
+    echo -e "Supported modes: ${YELLOW}${SUPPORTED_MODES[*]}${NC}"
+    exit 1
+}
+
+# Configure the project
+function configure_project() {
+    local mode="${1}"
+    
+    echo -e "${BLUE}Configuring project in ${mode} mode...${NC}"
+    # Run cmake with the requested preset
+    if ! cmake --preset "${mode}"; then
+        echo -e "${RED}Error: Configuration failed!${NC}"
+        exit 1
+    fi
+    
+    echo -e "${GREEN}Project configured successfully in ${mode} mode.${NC}"
+}
+
+# Build the project
+function build_project() {
+    local mode="${1}"
+    
+    echo -e "${BLUE}Building project in ${mode} mode...${NC}"
+    
+    # Check if the project is configured
+    if [ ! -f "${PROJECT_ROOT}/build/${mode}/CMakeCache.txt" ]; then
+        echo -e "${BLUE}Project not configured. Configuring first...${NC}"
+        configure_project "${mode}"
+    fi
+    
+    # Build the project
+    if ! cmake --build --preset "${mode}"; then
+        echo -e "${RED}Error: Build failed!${NC}"
+        exit 1
+    fi
+    
+    echo -e "${GREEN}Project built successfully in ${mode} mode.${NC}"
+}
+
+# Get binary path based on mode
+function get_binary_path() {
+    local mode="$1"
+    echo "${PROJECT_ROOT}/build/${mode}/smc"
+}
+
+# Run the project
+function run_project() {
+    local mode="${1}"
+    
+    local binary=$(get_binary_path "${mode}")
+    
+    echo -e "${BLUE}Running SMC (${mode} build)...${NC}"
+    
+    # Check if binary exists
+    echo -e "${BLUE}Preparing fresh binary...${NC}"
+    build_project "${mode}"
+    binary=$(get_binary_path "${mode}")
+    
+    # Run the binary
+    echo -e "${BLUE}Executing: ${binary}${NC}"
+    "${binary}"
+    
+    local exit_status=$?
+    if [ ${exit_status} -eq 0 ]; then
+        echo -e "${GREEN}Program exited successfully with status ${exit_status}.${NC}"
+    else
+        echo -e "${RED}Program exited with status ${exit_status}.${NC}"
+    fi
+}
+
+# Run tests
+function run_tests() {
+    local mode="${1}"
+
+    echo -e "${BLUE}Running tests in ${mode} mode...${NC}"
+    
+    # Check if build exists
+    echo -e "${BLUE}Preparing fresh build...${NC}"
+    build_project "${mode}"
+    
+    # Run tests using the test script
+    echo -e "${BLUE}Executing test script...${NC}"
+    
+    # Use environment variable to pass the mode to the test script
+    export SMC_TEST_DIR="${PROJECT_ROOT}/build/${mode}"
+    
+    if ! ctest --test-dir ${SMC_TEST_DIR}; then
+        echo -e "${RED}Tests failed!${NC}"
+        exit 1
+    fi
+    
+    echo -e "${GREEN}All tests passed successfully.${NC}"
+}
+
+# Main function
+function main() {
+    # Show usage if no arguments provided
+    if [ $# -eq 0 ]; then
+        echo -e "${RED}Error: No arguments provided.${NC}"
+        print_usage
+        exit 0
+    fi
+    
+    local command=""
+    local mode="${DEFAULT_MODE}"
+    
+    # Process arguments with getopts
+    while getopts ":c:b:r:t:h-:" opt; do
+        case "${opt}" in
+            c)
+                command="configure"
+                mode="${OPTARG}"
+                ;;
+            b)
+                command="build"
+                mode="${OPTARG}"
+                ;;
+            r)
+                command="run"
+                mode="${OPTARG}"
+                ;;
+            t)
+                command="test"
+                mode="${OPTARG}"
+                ;;
+            h)
+                print_usage
+                exit 0
+                ;;
+            *)
+                echo -e "${RED}Error: Unknown option -${OPTARG}${NC}"
+                print_usage
+                exit 1
+                ;;
+        esac
+        break # Exit after processing the first option
+    done
+    validate_mode "${mode}"
+    # Execute the requested command
+    case "${command}" in
+        configure)
+            configure_project "${mode}"
+            ;;
+        build)
+            build_project "${mode}"
+            ;;
+        run)
+            run_project "${mode}"
+            ;;
+        test)
+            run_tests "${mode}"
+            ;;
+        *)
+            if [ -z "${command}" ]; then
+                echo -e "${RED}Error: No command specified.${NC}"
+            else
+                echo -e "${RED}Error: Invalid command '${command}'.${NC}"
+            fi
+            print_usage
+            exit 1
+            ;;
+    esac
+}
+
+# Execute main function with all command line arguments
+main "$@"

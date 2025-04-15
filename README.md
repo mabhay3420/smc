@@ -1,56 +1,24 @@
+## Usage
+```bash
+$ ./smc_d -h
+SMC Driver - Helper script for SMC project
 
+Usage: smc_d -c|-b|-r|-t [mode]
 
-## Configure and Build
+Options:
+  -c [mode]       Configure project 
+  -b [mode]       Build project 
+  -r [mode]       Run the project 
+  -t [mode]       Run tests 
+  -h              Display this help message
 
-configure:
-```
-cmake --preset release
-```
+Modes:
+  release                 Release mode (optimized)
+  debug                   Debug mode (with debug symbols)
 
-build:
+Examples:
+  smc_d -c debug             Configure project in debug mode
+  smc_d -b release           Build project in release mode
+  smc_d -r debug             Run the debug binary
+  smc_d -t release           Run tests with release build
 ```
-cmake --build --preset release
-```
-
-For debug build:
-```
-cmake --preset debug
-cmake --build --preset debug
-```
-
-## Run
-Run the binary:
-```
-./build/release/smc
-```
-
-## Test
-
-Build binaries:
-```
-cmake --preset release
-cmake --build --preset release
-```
-
-Run tests:
-```
-ctest --test-dir build/release
-```
-
-## Debug
-Debug binary location: `build/debug/smc`
-
-1. Using lldb:
-```
-lldb build/debug/smc
-```
-
-set breakpoint at `main` function:
-```
-break main
-```
-and so on
-
-2. Using VSCode:
-    a. Install `Codelldb` extension.
-    b.  Use `Debug` configuration.
