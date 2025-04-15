@@ -24,6 +24,19 @@ Run the binary:
 ./build/release/smc
 ```
 
+## Test
+
+Build binaries:
+```
+cmake --preset release
+cmake --build --preset release
+```
+
+Run tests:
+```
+ctest --test-dir build/release
+```
+
 ## Debug
 Debug binary location: `build/debug/smc`
 
