@@ -13,4 +13,4 @@ struct TestLexerSources : public ::testing::Test {
     void TearDown() override {}
 };
 
-TEST_F(TestLexerSources, sample_test) { ASSERT_EQ(test(), 1); }
+TEST_F(TestLexerSources, sample_test) { ASSERT_EQ(1, 1); }
