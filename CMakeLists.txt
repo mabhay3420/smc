@@ -12,8 +12,8 @@ add_executable(
 include_directories(include)
 
 # Add extra scripts
-include(Extras.cmake)
+include(cmake/Extras.cmake)
 
 
 # Testing
-include(UnitTests.cmake)
+include(cmake/UnitTests.cmake)
