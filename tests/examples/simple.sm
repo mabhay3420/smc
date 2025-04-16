@@ -1,0 +1,8 @@
+STATES: [a], b
+
+SYMBOLS: 0,1
+
+TRANSITIONS:
+a, *, P(0), b
+b, 0, R-P(1), b
+b, 1, R-P(0), a

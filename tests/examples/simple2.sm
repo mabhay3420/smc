@@ -1,0 +1,15 @@
+STATES: [b], o, q, p, f
+
+SYMBOLS: 0, 1, e, x
+
+TRANSITIONS:
+b, *, P(e)-R-P(e)-R-P(0)-R-R-P(0)-L-L, o
+o, 1, R-P(x)-L-L-L, o
+o, 0, X, q
+q, 0 | 1, R-R, q
+q, X, P(1)-L, p
+p, x, P(X)-R, q
+p, e, R, f
+p, X, L-L, p
+f, *, R-R, f
+f, X, P(0)-L-L, o

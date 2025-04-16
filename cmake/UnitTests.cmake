@@ -10,6 +10,7 @@ include(GoogleTest)
 
 set(COMMON_TEST_SRCS
     tests/test_main.cpp
+    src/utils.cpp
 )
 
 set(lexer_TESTS_SRCS

@@ -10,6 +10,7 @@ add_executable(
     smc
     src/main.cpp
     src/lexer.cpp
+    src/utils.cpp
 )
 
 target_link_libraries(
