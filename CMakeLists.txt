@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.25)
 project(smc VERSION 0.0.1)
 enable_testing()
-set(CMAKE_CXX_STANDARD 17 CACHE STRING "")
+set(CMAKE_CXX_STANDARD 20 CACHE STRING "")
 
 # Find LLVM
 include(cmake/LLVM.cmake)
@@ -11,6 +11,7 @@ add_executable(
     src/main.cpp
     src/lexer.cpp
     src/utils.cpp
+    src/parser.cpp
 )
 
 target_link_libraries(

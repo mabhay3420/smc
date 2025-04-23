@@ -1,5 +1,6 @@
 #include "utils.hpp"
 #include <fstream>
+#include <optional>
 
 // Read entire file into a string
 std::string read_file_to_string(const std::string &filename) {
@@ -23,3 +24,11 @@ std::ostream &operator<<(std::ostream &os, const Indent &indent) {
     }
     return os;
 }
+
+// Takes a optional value
+// returns as it if it has value 
+// otherwise gives a deafult
+// template <typename T>
+// T unwrap_or(std::optional<T> a, T b) {
+//     if(a.)
+// }

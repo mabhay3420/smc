@@ -53,6 +53,8 @@ class Location {
     uint32_t col;
     uint32_t index;
 
+    Location(){};
+
     Location(uint32_t index, uint32_t line, uint32_t col)
         : line(line), col(col), index(index) {}
 
@@ -66,6 +68,7 @@ class LocationRange {
   public:
     Location start;
     Location end;
+    LocationRange(){};
     LocationRange(const Location &start, const Location &end)
         : start(start), end(end){};
     bool operator==(const LocationRange &range) const {
@@ -82,6 +85,7 @@ class Token {
     TokenType kind;
     std::string filename;
     LocationRange range;
+    Token(){};
     Token(std::string token, TokenType kind, std::string filename,
           LocationRange range)
         : token(token), kind(kind), filename(filename), range(range){};
@@ -100,7 +104,6 @@ void log_info(const std::string &message);
 void log_error(const std::string &message);
 class Lexer {
   private:
-    std::string srcfile;
     std::vector<char> source;
     char curr_char;
     Location cursor;
@@ -128,13 +131,25 @@ class Lexer {
     };
 
   public:
+    std::string srcfile;
     //   TODO - Use explicit if needed
-    Lexer(std::string srcfile) : srcfile(srcfile), cursor(0, 1, 1) {
+    Lexer(std::string srcfile)
+        : srcfile(srcfile), cursor(0, 1, 1) {
         auto source_text = read_file_to_string(srcfile);
         source.reserve(source_text.size());
         for (char c : source_text) {
             source.push_back(c);
         }
+        source.push_back('\0');
+        curr_char = source[0];
+    };
+
+    Lexer(const std::string &source_text, bool with_file)
+        : srcfile(""), cursor(0, 1, 1) {
+        // source.push_back('\0');
+        source.reserve(source_text.size());
+        for (char c : source_text)
+            source.push_back(c);
         source.push_back('\0');
         curr_char = source[0];
     };

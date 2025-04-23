@@ -19,8 +19,15 @@ set(lexer_TESTS_SRCS
     ${COMMON_TEST_SRCS}
 )
 
+set(parser_TESTS_SRCS
+    tests/parser_test.cpp
+    src/lexer.cpp
+    src/parser.cpp
+    ${COMMON_TEST_SRCS}
+)
 set(all_TEST_TARGETS
     lexer
+    parser
 )
 
 foreach(test_target ${all_TEST_TARGETS})
