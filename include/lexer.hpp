@@ -90,7 +90,7 @@ class Token {
 
     bool operator==(const Token &rightToken) const {
         return (rightToken.token == token) && (rightToken.kind == kind) &&
-               rightToken.range == range;
+               rightToken.range == range && (rightToken.filename == filename);
     }
 };
 
