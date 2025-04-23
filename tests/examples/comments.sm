@@ -1,0 +1,9 @@
+# States 
+STATES: [b]
+
+# Symbols
+SYMBOLS: e
+
+# Transitions
+TRANSITIONS:
+b,e,X,b

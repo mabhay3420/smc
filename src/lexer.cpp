@@ -32,14 +32,18 @@ std::ostream &operator<<(std::ostream &os, const TokenType &t) {
     return os;
 }
 
+std::ostream &operator<<(std::ostream &os, const LocationRange &range) {
+    os << range.start << "-" << range.end;
+    return os;
+}
+
 std::ostream &operator<<(std::ostream &os, const Location &loc) {
     os << loc.line << ":" << loc.col;
     return os;
 };
 
 Location operator+(const Location &loc, uint32_t offset) {
-    Location newLoc(loc.index + offset, loc.line,
-                    loc.col + offset);
+    Location newLoc(loc.index + offset, loc.line, loc.col + offset);
     return newLoc;
 }
 std::ostream &operator<<(std::ostream &os, const Token &token) {

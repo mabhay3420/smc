@@ -73,6 +73,7 @@ class LocationRange {
     }
 };
 
+std::ostream &operator<<(std::ostream &os, const LocationRange &range);
 std::ostream &operator<<(std::ostream &os, const Location &loc);
 
 class Token {
@@ -179,7 +180,7 @@ class Lexer {
         switch (curr_char) {
         case '\0':
             next_char();
-            return Token("", TokenType::EOF_TOKEN, srcfile,
+            return Token("\0", TokenType::EOF_TOKEN, srcfile,
                          {token_loc, token_loc + 1});
         case '\n':
             next_char();
