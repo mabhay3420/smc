@@ -41,44 +41,62 @@ enum TokenType {
     STAR = 15,
     COLON = 16,
 };
-
 const uint32_t KEYWORD_START = 104;
+
+const std::optional<TokenType> token_type_from_string(const std::string &s);
 
 std::ostream &operator<<(std::ostream &os, const TokenType &t);
 
 class Location {
   public:
-    std::string filename;
     uint32_t line;
     uint32_t col;
     uint32_t index;
 
-    Location(std::string filename, uint32_t index, uint32_t line, uint32_t col)
-        : filename(filename), line(line), col(col), index(index) {}
-};
+    Location(uint32_t index, uint32_t line, uint32_t col)
+        : line(line), col(col), index(index) {}
 
+    bool operator==(const Location &loc) const {
+        return (loc.line == line) & (loc.col == col) && (loc.index == index);
+    }
+};
 Location operator+(const Location &loc, uint32_t offset);
+
+class LocationRange {
+  public:
+    Location start;
+    Location end;
+    LocationRange(const Location &start, const Location &end)
+        : start(start), end(end){};
+    bool operator==(const LocationRange &range) const {
+        return range.start == start && range.end == end;
+    }
+};
 
 std::ostream &operator<<(std::ostream &os, const Location &loc);
 
-const std::optional<TokenType> token_type_from_string(const std::string &s);
-
-// const std::optional<TokenType> token_type_from_string(const std::string &s);
 class Token {
   public:
     std::string token;
     TokenType kind;
-    Location start;
-    Location end;
-
-    Token(std::string token, TokenType kind, Location start, Location end)
-        : token(token), kind(kind), start(start), end(end) {}
+    std::string filename;
+    LocationRange range;
+    Token(std::string token, TokenType kind, std::string filename,
+          LocationRange range)
+        : token(token), kind(kind), filename(filename), range(range){};
     static std::optional<TokenType>
     check_if_keyword(const std::string &token_text);
+
+    bool operator==(const Token &rightToken) const {
+        return (rightToken.token == token) && (rightToken.kind == kind) &&
+               rightToken.range == range;
+    }
 };
 
 std::ostream &operator<<(std::ostream &os, const Token &token);
 
+void log_info(const std::string &message);
+void log_error(const std::string &message);
 class Lexer {
   private:
     std::string srcfile;
@@ -110,7 +128,7 @@ class Lexer {
 
   public:
     //   TODO - Use explicit if needed
-    Lexer(std::string srcfile) : srcfile(srcfile), cursor(srcfile, 0, 1, 1) {
+    Lexer(std::string srcfile) : srcfile(srcfile), cursor(0, 1, 1) {
         auto source_text = read_file_to_string(srcfile);
         source.reserve(source_text.size());
         for (char c : source_text) {
@@ -149,7 +167,7 @@ class Lexer {
     // starting from current token try to match next token
     std::optional<Token> get_token() {
         // check for comment at the start of each line
-        if (cursor.col == 0)
+        if (cursor.col == 1)
             skip_comment();
         // skip whitespace
         skip_whitespace();
@@ -161,38 +179,48 @@ class Lexer {
         switch (curr_char) {
         case '\0':
             next_char();
-            return Token("", TokenType::EOF_TOKEN, token_loc, token_loc + 1);
+            return Token("", TokenType::EOF_TOKEN, srcfile,
+                         {token_loc, token_loc + 1});
         case '\n':
             next_char();
-            return Token("\n", TokenType::NEWLINE, token_loc, token_loc + 1);
+            return Token("\n", TokenType::NEWLINE, srcfile,
+                         {token_loc, token_loc + 1});
         case '|':
             next_char();
-            return Token("|", TokenType::OR, token_loc, token_loc + 1);
+            return Token("|", TokenType::OR, srcfile,
+                         {token_loc, token_loc + 1});
         case '[':
             next_char();
-            return Token("[", TokenType::LeftBracket, token_loc, token_loc + 1);
+            return Token("[", TokenType::LeftBracket, srcfile,
+                         {token_loc, token_loc + 1});
         case ']':
             next_char();
-            return Token("]", TokenType::RightBracket, token_loc,
-                         token_loc + 1);
+            return Token("]", TokenType::RightBracket, srcfile,
+                         {token_loc, token_loc + 1});
         case ',':
             next_char();
-            return Token(",", TokenType::COMMA, token_loc, token_loc + 1);
+            return Token(",", TokenType::COMMA, srcfile,
+                         {token_loc, token_loc + 1});
         case '-':
             next_char();
-            return Token("-", TokenType::DASH, token_loc, token_loc + 1);
+            return Token("-", TokenType::DASH, srcfile,
+                         {token_loc, token_loc + 1});
         case '(':
             next_char();
-            return Token("(", TokenType::LeftParen, token_loc, token_loc + 1);
+            return Token("(", TokenType::LeftParen, srcfile,
+                         {token_loc, token_loc + 1});
         case ')':
             next_char();
-            return Token(")", TokenType::RightParen, token_loc, token_loc + 1);
+            return Token(")", TokenType::RightParen, srcfile,
+                         {token_loc, token_loc + 1});
         case '*':
             next_char();
-            return Token("*", TokenType::STAR, token_loc, token_loc + 1);
+            return Token("*", TokenType::STAR, srcfile,
+                         {token_loc, token_loc + 1});
         case ':':
             next_char();
-            return Token(":", TokenType::COLON, token_loc, token_loc + 1);
+            return Token(":", TokenType::COLON, srcfile,
+                         {token_loc, token_loc + 1});
         default:
             // Handle alphanumeric identifiers and keywords
             if (std::isalnum(curr_char)) {
@@ -208,25 +236,22 @@ class Lexer {
                 // Check if it's a keyword
                 auto keyword = Token::check_if_keyword(token_text);
                 if (keyword.has_value()) {
-                    return Token(token_text, keyword.value(), token_loc,
-                                 cursor);
+                    return Token(token_text, keyword.value(), srcfile,
+                                 {token_loc, cursor});
                 } else {
-                    return Token(token_text, TokenType::IDENT, token_loc,
-                                 cursor);
+                    return Token(token_text, TokenType::IDENT, srcfile,
+                                 {token_loc, cursor});
                 }
             } else {
                 // Unknown token
                 std::string message = "Unknown token: ";
                 message += curr_char;
-                abort(message);
+                log_error(message);
                 return std::nullopt;
             }
         }
     }
 };
-
-void log_info(const std::string &message);
-void log_error(const std::string &message);
 
 } // namespace lexer
 

@@ -1,5 +1,6 @@
 STATES: [b], o, q, p, f
 
+# this is a comment
 SYMBOLS: 0, 1, e, x
 
 TRANSITIONS:

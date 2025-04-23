@@ -1,0 +1,4 @@
+STATES: [b]
+SYMBOLS: e
+TRANSITIONS:
+b,e,X,b

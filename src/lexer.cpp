@@ -33,12 +33,12 @@ std::ostream &operator<<(std::ostream &os, const TokenType &t) {
 }
 
 std::ostream &operator<<(std::ostream &os, const Location &loc) {
-    os << loc.filename << ":" << loc.line << ":" << loc.col;
+    os << loc.line << ":" << loc.col;
     return os;
 };
 
 Location operator+(const Location &loc, uint32_t offset) {
-    Location newLoc(loc.filename, loc.index + offset, loc.line,
+    Location newLoc(loc.index + offset, loc.line,
                     loc.col + offset);
     return newLoc;
 }
@@ -48,13 +48,12 @@ std::ostream &operator<<(std::ostream &os, const Token &token) {
        << "\n";
     os << indent << token.token << "\n";
     os << indent << token.kind << "\n";
-    if (token.start.filename == token.end.filename &&
-        token.start.line == token.end.line) {
+    if (token.range.start.line == token.range.end.line) {
         // pretty print case
-        os << indent << token.start.filename << ":" << token.start.line << ":"
-           << token.start.col << "-" << token.end.col << "\n";
+        os << indent << token.filename << ":" << token.range.start.line << ":"
+           << token.range.start.col << "-" << token.range.end.col << "\n";
     } else {
-        os << indent << token.start << "-" << token.end << "\n";
+        os << indent << token.range.start << "-" << token.range.end << "\n";
     }
     os << "}";
     return os;
