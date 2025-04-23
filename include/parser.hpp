@@ -125,7 +125,7 @@ class Parser {
         throw std::runtime_error("[PARSER]: " + msg);
     }
 
-    // [IDENT]
+    // LEFT_BRACKET IDENT RIGHT_BRACKET
     void intial_state_identifier() {
         consume(lexer::TokenType::LeftBracket);
         std::string state;
@@ -145,6 +145,7 @@ class Parser {
         return true;
     }
 
+    //  ((IDENT COMMA)*)
     bool try_comma_ident(actionOnTokenFnType action = std::nullopt) {
         auto comma = try_consume(lexer::TokenType::COMMA);
         if (!comma)
@@ -181,13 +182,21 @@ class Parser {
         }
     }
 
-    // ((IDENT COMMA)*) (INITIAL_STATE) (COMMA IDENT)*
-    void parse() {
+    // := ((IDENT COMMA)*) (`INITIAL_STATE`) (COMMA IDENT)*
+    void state_list() {
         try_state_ident_comma();
         intial_state_identifier();
-        // parse more
         try_state_comma_ident();
     }
+
+    // := STATES COLON `STATE_LIST`
+    void state_declaration() {
+        consume(lexer::TokenType::STATES);
+        consume(lexer::TokenType::COLON);
+        state_list();
+    }
+
+    void parse() { state_list(); }
 };
 
 } // namespace parser
