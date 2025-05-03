@@ -6,14 +6,11 @@
 // #include <stdexcept>
 
 int main() {
-    std::string fileName = "tests/examples/test.sm";
-    auto s = "a, t ,[b], c, d";
-    auto lexer = std::make_unique<lexer::Lexer>(s, false);
+    std::string fileName = "tests/examples/simple2.sm";
+    // auto s = "STATES: [a], [b]";
+    auto lexer = std::make_unique<lexer::Lexer>(fileName);
     auto parser = std::make_unique<parser::Parser>(std::move(lexer));
     parser->parse();
-    std::cout << "[" << parser->tree.initial_state << "]" << std::endl;
-    // std::cout << parser.
-    for (auto state : parser->tree.states)
-        std::cout << state << std::endl;
+    std::cout << parser->tree << std::endl;
     return 0;
 }

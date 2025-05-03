@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cstdint>
 #include <iostream>
+#include <optional>
 #include <ostream>
 #include <stdexcept>
 #include <string>
@@ -44,6 +45,8 @@ enum TokenType {
 const uint32_t KEYWORD_START = 104;
 
 const std::optional<TokenType> token_type_from_string(const std::string &s);
+
+const std::optional<std::string> token_type_to_string(const TokenType kind);
 
 std::ostream &operator<<(std::ostream &os, const TokenType &t);
 

@@ -27,8 +27,30 @@ const std::map<std::string, TokenType> tokenMap = {
     {"*", TokenType::STAR},
     {":", TokenType::COLON}};
 
+const std::map<TokenType, std::string> tokenToString = {
+    {TokenType::EOF_TOKEN, "EOF"},
+    {TokenType::NEWLINE, "NEWLINE"},
+    {TokenType::STATES, "STATES"},
+    {TokenType::SYMBOLS, "SYMBOLS"},
+    {TokenType::TRANSITIONS, "TRANSITIONS"},
+    {TokenType::R, "R"},
+    {TokenType::L, "L"},
+    {TokenType::X, "X"},
+    {TokenType::P, "P"},
+    {TokenType::IDENT, "IDENT"},
+    {TokenType::OR, "OR"},
+    {TokenType::LeftBracket, "["},
+    {TokenType::RightBracket, "]"},
+    {TokenType::COMMA, ","},
+    {TokenType::DASH, "-"},
+    {TokenType::LeftParen, "("},
+    {TokenType::RightParen, ")"},
+    {TokenType::STAR, "*"},
+    {TokenType::COLON, ":"}};
+
 std::ostream &operator<<(std::ostream &os, const TokenType &t) {
-    os << "TT:" << static_cast<int>(t);
+    os << "TT: '" << token_type_to_string(t).value_or("") << "' ("
+       << static_cast<int>(t) << ")";
     return os;
 }
 
@@ -66,6 +88,13 @@ std::ostream &operator<<(std::ostream &os, const Token &token) {
 const std::optional<TokenType> token_type_from_string(const std::string &s) {
     auto it = tokenMap.find(s);
     if (it != tokenMap.end()) {
+        return it->second;
+    }
+    return std::nullopt;
+}
+const std::optional<std::string> token_type_to_string(const TokenType kind) {
+    auto it = tokenToString.find(kind);
+    if (it != tokenToString.end()) {
         return it->second;
     }
     return std::nullopt;

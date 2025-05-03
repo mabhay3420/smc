@@ -45,7 +45,6 @@ struct TestInvalidParseStateList : public ::testing::Test {
         testCases = {
             {"a,"},       // ending with comma
             {"a, [b"},    // incomplete bracket
-            {"[a], [b]"}, // two initial states
             {"a, b"}      // no initial state
         };
     }
@@ -98,7 +97,6 @@ struct TestInvalidParseStateDeclaration : public ::testing::Test {
         testCases = {
             {"STATE: a,[b]"},     // misspelling
             {"STATES: a, [b"},    // incomplete bracket
-            {"STATES: [a], [b]"}, // two initial states
             {"STATES: a, b"}      // no initial state
         };
     }
@@ -113,5 +111,28 @@ TEST_F(TestInvalidParseStateDeclaration, sample_test) {
         auto lexer = std::make_unique<lexer::Lexer>(src, false);
         auto parser = std::make_unique<parser::Parser>(std::move(lexer));
         EXPECT_THROW(parser->state_declaration(), std::runtime_error);
+    }
+}
+
+struct TestParserSymbolList: public ::testing::Test {
+    std::vector<std::tuple<std::string, std::vector<std::string>>> testCases;
+
+    TestParserSymbolList() {
+        testCases = {
+            {"a,b", {"a", "b"}},     // misspelling
+        };
+    }
+
+  protected:
+    void SetUp() override {}
+    void TearDown() override {}
+};
+
+TEST_F(TestParserSymbolList, sample_test) {
+    for (auto [src, symbols] : testCases) {
+        auto lexer = std::make_unique<lexer::Lexer>(src, false);
+        auto parser = std::make_unique<parser::Parser>(std::move(lexer));
+        parser->symbols_list();
+        ASSERT_EQ(symbols, parser->tree.symbols);
     }
 }

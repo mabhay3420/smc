@@ -14,7 +14,9 @@
       "installDir": "${sourceDir}/install/${presetName}",
       "cacheVariables": {
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-        "CT_LLVM_INSTALL_DIR": "~/projects/personal/llvm-project/build"
+        "CT_LLVM_INSTALL_DIR": "~/projects/personal/llvm-project/build",
+        "CMAKE_C_COMPILER": "/Users/mabhay/projects/personal/llvm-project/build/bin/clang",
+        "CMAKE_CXX_COMPILER": "/Users/mabhay/projects/personal/llvm-project/build/bin/clang++"
       }
     },
     {
@@ -46,6 +48,25 @@
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_CXX_FLAGS": "-fsanitize=address -fno-omit-frame-pointer"
       }
+    },
+
+    {
+      "name": "coverage-debug",
+      "displayName": "Debug + Coverage",
+      "description": "Debug build with coverage instrumentation",
+      "inherits": "debug",
+      "cacheVariables": {
+        "ENABLE_COVERAGE": "ON"
+      }
+    },
+    {
+      "name": "coverage-release",
+      "displayName": "Release + Coverage",
+      "description": "Release build with coverage instrumentation",
+      "inherits": "release",
+      "cacheVariables": {
+        "ENABLE_COVERAGE": "ON"
+      }
     }
   ],
   "buildPresets": [
@@ -65,6 +86,19 @@
       "name": "asan",
       "configurePreset": "asan",
       "configuration": "Debug",
+      "jobs": 8
+    },
+
+    {
+      "name": "coverage-debug",
+      "configurePreset": "coverage-debug",
+      "configuration": "Debug",
+      "jobs": 8
+    },
+    {
+      "name": "coverage-release",
+      "configurePreset": "coverage-release",
+      "configuration": "Release",
       "jobs": 8
     }
   ]

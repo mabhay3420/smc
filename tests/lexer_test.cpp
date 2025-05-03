@@ -309,10 +309,6 @@ TEST_F(TestCorrectSources, sample_test) {
         }
         ASSERT_GT(tokenList.size(), 0);
         ASSERT_EQ(tokenList.size(), expectedTokenList.size());
-        for (size_t i = 0; i < tokenList.size(); i++) {
-            std::cout << "i: " << i << std::endl;
-            ASSERT_EQ(tokenList[i], expectedTokenList[i]);
-        }
         ASSERT_EQ(tokenList, expectedTokenList);
     }
 }

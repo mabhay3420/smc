@@ -49,4 +49,21 @@ class Indent {
 
 // Stream insertion operator
 std::ostream &operator<<(std::ostream &os, const Indent &indent);
+
+class Line {
+  public:
+    Indent indent;
+    std::string text;
+    Line(Indent indent, std::string text) : indent(indent), text(text) {}
+    Line(Indent indent, std::ostream &os) : indent(indent) {
+    }
+    Line(std::string text) : indent(0), text(text) {}
+    Line() : indent(0), text("") {}
+
+    // Stream insertion operator
+    friend std::ostream &operator<<(std::ostream &os, const Line &line) {
+        os << line.indent << line.text << "\n";
+        return os;
+    }
+};
 #endif

@@ -31,6 +31,7 @@ function print_usage() {
     echo -e "  -b [mode]       Build project "
     echo -e "  -r [mode]       Run the project "
     echo -e "  -t [mode]       Run tests "
+    echo -e "  -p [mode]       generate coverage report"
     echo -e "  -h              Display this help message"
     echo ""
     echo -e "Modes:"
@@ -125,6 +126,14 @@ function run_project() {
     fi
 }
 
+ function generate_coverage() {
+     local mode="$1"
+     echo -e "${BLUE}Generating coverage report in ${mode} mode...${NC}"
+    #  build_project "coverage-${mode}"
+    run_tests "coverage-${mode}"
+     echo -e "${GREEN}Coverage report available at ./build/coverage-${mode}/coverage-report/index.html${NC}"
+ }
+
 # Run tests
 function run_tests() {
     local mode="${1}"
@@ -162,7 +171,7 @@ function main() {
     local mode="${DEFAULT_MODE}"
     
     # Process arguments with getopts
-    while getopts ":c:b:r:t:h-:" opt; do
+    while getopts ":c:b:r:t:p:h-:" opt; do
         case "${opt}" in
             c)
                 command="configure"
@@ -178,6 +187,10 @@ function main() {
                 ;;
             t)
                 command="test"
+                mode="${OPTARG}"
+                ;;
+            p)
+                command="coverage"
                 mode="${OPTARG}"
                 ;;
             h)
@@ -206,6 +219,9 @@ function main() {
             ;;
         test)
             run_tests "${mode}"
+            ;;
+        coverage)
+            generate_coverage "${mode}"
             ;;
         *)
             if [ -z "${command}" ]; then

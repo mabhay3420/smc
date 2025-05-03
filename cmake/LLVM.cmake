@@ -63,3 +63,18 @@ message("LLVM STATUS:
 include_directories(SYSTEM ${LLVM_INCLUDE_DIRS})
 link_directories(${LLVM_LIBRARY_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
+
+find_program(LLVM_PROFDATA
+  NAMES llvm-profdata
+  HINTS "${CT_LLVM_INSTALL_DIR}/bin"
+)
+find_program(LLVM_COV
+  NAMES llvm-cov
+  HINTS "${CT_LLVM_INSTALL_DIR}/bin"
+)
+
+if(NOT LLVM_PROFDATA OR NOT LLVM_COV)
+  message(FATAL_ERROR
+    "Could not find llvm-profdata or llvm-cov under ${CT_LLVM_INSTALL_DIR}/bin"
+  )
+endif()
