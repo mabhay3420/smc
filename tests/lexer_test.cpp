@@ -1,4 +1,5 @@
 #include "lexer.hpp"
+#include <algorithm>
 #include <cstddef>
 #include <gtest/gtest.h>
 #include <string>
@@ -309,6 +310,12 @@ TEST_F(TestCorrectSources, sample_test) {
         }
         ASSERT_GT(tokenList.size(), 0);
         ASSERT_EQ(tokenList.size(), expectedTokenList.size());
+        for (size_t i = 0; i < tokenList.size(); ++i) {
+            if (tokenList[i] != expectedTokenList[i]) {
+                std::cout << "Actual: " << tokenList[i] << std::endl;
+                std::cout << "Expected: " << expectedTokenList[i] << std::endl;
+            }
+        }
         ASSERT_EQ(tokenList, expectedTokenList);
     }
 }

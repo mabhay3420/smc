@@ -19,6 +19,18 @@
             "program": "${workspaceFolder}/build/debug/smc",
             "args": [],
             "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug lexer test",
+            "program": "${workspaceFolder}/build/debug/lexer_test",
+            "args": [
+                "--gtest_filter=TestCorrectSources.sample_test",
+                "--gtest_also_run_disabled_tests",
+                "--output-on-failure"
+            ],
+            "cwd": "${workspaceFolder}"
         }
     ]
 }
