@@ -5,6 +5,9 @@ set(CMAKE_CXX_STANDARD 20 CACHE STRING "")
 # Find LLVM
 include(cmake/LLVM.cmake)
 
+# Include third-party libraries
+add_subdirectory(thirdparty)
+
 add_executable(
     smc
     src/main.cpp
@@ -17,6 +20,7 @@ target_link_libraries(
     smc
     PRIVATE
     LLVMSupport
+    nlohmann_json::nlohmann_json
 )
 
 include_directories(include)
