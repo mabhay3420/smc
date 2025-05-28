@@ -4,6 +4,7 @@
 #include "utils.hpp"
 #include <functional>
 #include <memory>
+#include <nlohmann/json.hpp>
 #include <optional>
 #include <ostream>
 #include <sstream>
@@ -12,6 +13,7 @@
 #include <variant>
 #include <vector>
 
+using json = nlohmann::json;
 namespace parser {
 
 struct Star {};
@@ -23,8 +25,8 @@ void dump(const Star &star, std::ostream &os, const Indent &indent);
 void dump(const OR &orCond, std::ostream &os, const Indent &indent);
 
 using Condition = std::variant<Star, OR>;
-void dump(const Condition &cond, std::ostream &os,
-                   const Indent &indent);
+void dump(const Condition &cond, std::ostream &os, const Indent &indent);
+void to_json(json &j, const Condition &cond);
 
 struct R {};
 struct L {};
@@ -32,6 +34,10 @@ struct X {};
 struct P {
     std::string sym;
 };
+void to_json(json &j, const R &r);
+void to_json(json &j, const L &l);
+void to_json(json &j, const X &x);
+void to_json(json &j, const P &p);
 void dump(const R &r, std::ostream &os, const Indent &indent);
 void dump(const L &l, std::ostream &os, const Indent &indent);
 void dump(const X &x, std::ostream &os, const Indent &indent);
@@ -39,6 +45,7 @@ void dump(const P &p, std::ostream &os, const Indent &indent);
 using TransitionStep = std::variant<R, L, X, P>;
 
 void dump(const TransitionStep &step, std::ostream &os, const Indent &indent);
+void to_json(json &j, const TransitionStep &step);
 // TODO : See if we can specify a concept (C++ 20)
 std::optional<TransitionStep> fromTokenAndValue(const lexer::Token &token,
                                                 const std::string &value = "");
@@ -55,6 +62,7 @@ class Transition {
 };
 
 void dump(const Transition &tr, std::ostream &os, const Indent &indent);
+void to_json(json &j, const Transition &tr);
 
 class ParseTree {
   public:
@@ -66,6 +74,8 @@ class ParseTree {
 
 void dump(const ParseTree &tree, std::ostream &os,
           const Indent &indent = Indent{0});
+
+void to_json(json &j, const ParseTree &tree);
 
 template <typename T> using optionalFnType = std::optional<std::function<T>>;
 

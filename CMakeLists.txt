@@ -24,6 +24,8 @@ target_link_libraries(
 )
 
 include_directories(include)
+# TODO - Is there a better way to do this?
+include_directories(thirdparty/json/include)
 
 message(STATUS "CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}")
 

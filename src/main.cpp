@@ -1,5 +1,7 @@
 #include "lexer.hpp"
 #include "parser.hpp"
+#include <fstream>
+#include <iostream>
 #include <nlohmann/json.hpp>
 // #include "llvm/ADT/StringRef.h"
 // #include "llvm/Support/raw_ostream.h"
@@ -17,5 +19,15 @@ int main() {
     std::cout << ex3.dump(4) << std::endl;
     parser->parse();
     parser::dump(parser->tree, std::cout);
+    json j;
+    parser::to_json(j, parser->tree);
+    auto example_json_file = "misc/example.json";
+    std::ofstream out(example_json_file);
+    if (!out.is_open()) {
+        throw std::runtime_error("Failed to open output file: " +
+                                 std::string(example_json_file));
+    }
+    out << j.dump(4); // Write JSON to file with 4 spaces indentation
+    // std::cout << j.dump(2) << std::endl;
     return 0;
 }

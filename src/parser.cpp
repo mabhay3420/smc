@@ -5,6 +5,8 @@
 #include <ostream>
 #include <variant>
 
+using json = nlohmann::json;
+
 namespace parser {
 
 std::optional<TransitionStep> fromTokenAndValue(const lexer::Token &token,
@@ -27,10 +29,14 @@ std::optional<TransitionStep> fromTokenAndValue(const lexer::Token &token,
 void dump(const TransitionStep &step, std::ostream &os, const Indent &indent) {
     std::visit([&os, &indent](auto &&arg) { dump(arg, os, indent); }, step);
 }
+void to_json(json &j, const TransitionStep &step) {
+    std::visit([&j](auto &&arg) { to_json(j, arg); }, step);
+}
 
 void dump(const Star &star, std::ostream &os, const Indent &indent) {
-    os << Line(indent, "*(ALWAYS)");
+    os << Line(indent, "*");
 }
+void to_json(json &j, const Star &star) { j = "*"; }
 void dump(const OR &orCond, std::ostream &os, const Indent &indent) {
     std::string or_symbols;
     for (const auto &sym : orCond.sym) {
@@ -38,18 +44,31 @@ void dump(const OR &orCond, std::ostream &os, const Indent &indent) {
     }
     os << Line(indent, "OR { " + or_symbols + "}");
 }
+void to_json(json &j, const OR &orCond) {
+    j["OR"] = json::array();
+    for (const auto &sym : orCond.sym) {
+        j["OR"].push_back(sym);
+    }
+}
 void dump(const Condition &cond, std::ostream &os, const Indent &indent) {
     std::visit([&os, &indent](auto &&arg) { dump(arg, os, indent); }, cond);
 }
+void to_json(json &j, const Condition &cond) {
+    std::visit([&j](auto &&arg) { to_json(j, arg); }, cond);
+}
+void to_json(json &j, const R &r) { j = "R"; }
 void dump(const R &r, std::ostream &os, const Indent &indent) {
     os << Line(indent, "R");
 }
+void to_json(json &j, const L &l) { j = "L"; }
 void dump(const L &l, std::ostream &os, const Indent &indent) {
     os << Line(indent, "L");
 }
+void to_json(json &j, const X &x) { j = "X"; }
 void dump(const X &x, std::ostream &os, const Indent &indent) {
     os << Line(indent, "X");
 }
+void to_json(json &j, const P &p) { j = "P(" + p.sym + ")"; }
 void dump(const P &p, std::ostream &os, const Indent &indent) {
     os << Line(indent, "P(" + p.sym + ")");
 }
@@ -66,6 +85,18 @@ void dump(const Transition &tr, std::ostream &os, const Indent &indent) {
     os << Line(indent + 1, "}");
     os << Line(indent + 1, "Final State: " + tr.finalState);
     os << Line(indent, "}");
+}
+
+void to_json(json &j, const Transition &tr) {
+    j["initialState"] = tr.initialState;
+    to_json(j["condition"], tr.condition);
+    j["steps"] = json::array();
+    for (const auto &step : tr.steps) {
+        json step_json;
+        to_json(step_json, step);
+        j["steps"].push_back(step_json);
+    }
+    j["finalState"] = tr.finalState;
 }
 
 void dump(const ParseTree &tree, std::ostream &os, const Indent &indent) {
@@ -87,6 +118,18 @@ void dump(const ParseTree &tree, std::ostream &os, const Indent &indent) {
     }
     os << Line(indent + 1, "}");
     os << Line(indent, "}");
+}
+
+void to_json(json &j, const ParseTree &tree) {
+    j["initialState"] = tree.initial_state;
+    j["states"] = tree.states;
+    j["symbols"] = tree.symbols;
+    j["transitions"] = json::array();
+    for (const auto &tr : tree.transitions) {
+        json tr_json;
+        to_json(tr_json, tr);
+        j["transitions"].push_back(tr_json);
+    }
 }
 
 } // namespace parser
