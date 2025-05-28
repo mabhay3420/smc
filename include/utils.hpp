@@ -8,9 +8,14 @@ std::string read_file_to_string(const std::string &filename);
 class Indent {
   private:
     uint32_t s_width;
+    uint8_t tab_size = 1; // Default tab size, can be adjusted
 
   public:
     Indent(uint32_t s_width) : s_width(s_width){};
+    Indent(uint32_t s_width, uint8_t tab_size)
+        : s_width(s_width), tab_size(tab_size){};
+
+    uint8_t getTabSize() const { return tab_size; }
 
     // Addition operator to increase indentation
     Indent operator+(uint32_t additional) const {
@@ -55,8 +60,7 @@ class Line {
     Indent indent;
     std::string text;
     Line(Indent indent, std::string text) : indent(indent), text(text) {}
-    Line(Indent indent, std::ostream &os) : indent(indent) {
-    }
+    Line(Indent indent, std::ostream &os) : indent(indent) {}
     Line(std::string text) : indent(0), text(text) {}
     Line() : indent(0), text("") {}
 

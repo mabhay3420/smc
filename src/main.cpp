@@ -11,6 +11,7 @@ int main() {
     auto lexer = std::make_unique<lexer::Lexer>(fileName);
     auto parser = std::make_unique<parser::Parser>(std::move(lexer));
     parser->parse();
-    std::cout << parser->tree << std::endl;
+    // std::cout << parser->tree << std::endl;
+    parser::dump(parser->tree, std::cout);
     return 0;
 }

@@ -1,14 +1,11 @@
 #ifndef PARSER_HPP
 #define PARSER_HPP
 #include "lexer.hpp"
-#include <algorithm>
-#include <concepts>
+#include "utils.hpp"
 #include <functional>
 #include <memory>
 #include <optional>
 #include <ostream>
-#include <regex>
-#include <shared_mutex>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -22,11 +19,14 @@ struct OR {
     std::vector<std::string> sym;
 };
 
+void dump(const Star &star, std::ostream &os, const Indent &indent);
 std::ostream &operator<<(std::ostream &os, const Star &star);
+void dump(const OR &orCond, std::ostream &os, const Indent &indent);
 std::ostream &operator<<(std::ostream &os, const OR &orCond);
 
 using Condition = std::variant<Star, OR>;
-
+void dump(const Condition &cond, std::ostream &os,
+                   const Indent &indent);
 std::ostream &operator<<(std::ostream &os, const Condition &cond);
 
 struct R {};
@@ -35,6 +35,10 @@ struct X {};
 struct P {
     std::string sym;
 };
+void dump(const R &r, std::ostream &os, const Indent &indent);
+void dump(const L &l, std::ostream &os, const Indent &indent);
+void dump(const X &x, std::ostream &os, const Indent &indent);
+void dump(const P &p, std::ostream &os, const Indent &indent);
 std::ostream &operator<<(std::ostream &os, const R &r);
 std::ostream &operator<<(std::ostream &os, const L &l);
 std::ostream &operator<<(std::ostream &os, const X &x);
@@ -42,6 +46,7 @@ std::ostream &operator<<(std::ostream &os, const P &p);
 
 using TransitionStep = std::variant<R, L, X, P>;
 
+void dump(const TransitionStep &step, std::ostream &os, const Indent &indent);
 std::ostream &operator<<(std::ostream &os, const TransitionStep &step);
 
 // TODO : See if we can specify a concept (C++ 20)
@@ -59,6 +64,8 @@ class Transition {
         : initialState(""), condition(OR{{}}), steps({}), finalState(""){};
 };
 
+void dump(const Transition &tr, std::ostream &os, const Indent &indent);
+
 std::ostream &operator<<(std::ostream &os, const Transition &tr);
 
 class ParseTree {
@@ -69,6 +76,8 @@ class ParseTree {
     std::vector<Transition> transitions;
 };
 
+void dump(const ParseTree &tree, std::ostream &os,
+          const Indent &indent = Indent{0});
 std::ostream &operator<<(std::ostream &os, const ParseTree &tree);
 
 template <typename T> using optionalFnType = std::optional<std::function<T>>;
