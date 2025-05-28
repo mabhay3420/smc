@@ -24,11 +24,6 @@ std::optional<TransitionStep> fromTokenAndValue(const lexer::Token &token,
     }
 }
 
-std::ostream &operator<<(std::ostream &os, const TransitionStep &step) {
-    std::visit([&os](auto &&arg) { os << arg; }, step);
-    return os;
-}
-
 void dump(const TransitionStep &step, std::ostream &os, const Indent &indent) {
     std::visit([&os, &indent](auto &&arg) { dump(arg, os, indent); }, step);
 }
@@ -43,24 +38,8 @@ void dump(const OR &orCond, std::ostream &os, const Indent &indent) {
     }
     os << Line(indent, "OR { " + or_symbols + "}");
 }
-std::ostream &operator<<(std::ostream &os, const Star &star) {
-    os << "*(ALWAYS)";
-    return os;
-}
-std::ostream &operator<<(std::ostream &os, const OR &orCond) {
-    os << "OR {";
-    for (const auto &sym : orCond.sym) {
-        os << sym << " ";
-    }
-    os << "}";
-    return os;
-}
 void dump(const Condition &cond, std::ostream &os, const Indent &indent) {
     std::visit([&os, &indent](auto &&arg) { dump(arg, os, indent); }, cond);
-}
-std::ostream &operator<<(std::ostream &os, const Condition &cond) {
-    std::visit([&os](auto &&arg) { os << arg; }, cond);
-    return os;
 }
 void dump(const R &r, std::ostream &os, const Indent &indent) {
     os << Line(indent, "R");
@@ -74,58 +53,6 @@ void dump(const X &x, std::ostream &os, const Indent &indent) {
 void dump(const P &p, std::ostream &os, const Indent &indent) {
     os << Line(indent, "P(" + p.sym + ")");
 }
-std::ostream &operator<<(std::ostream &os, const R &r) {
-    os << "R";
-    return os;
-}
-std::ostream &operator<<(std::ostream &os, const L &l) {
-    os << "L";
-    return os;
-}
-std::ostream &operator<<(std::ostream &os, const X &x) {
-    os << "X";
-    return os;
-}
-std::ostream &operator<<(std::ostream &os, const P &p) {
-    os << "P(" + p.sym + ")";
-    return os;
-}
-
-/*
-Transition {
-    Initial State: "A"
-    Conditions {
-       OR { "B" "C" }
-    }
-    Steps: [R, L, P("X")],
-    Final State: "D"
-}
-*/
-std::ostream &operator<<(std::ostream &os, const Transition &tr) {
-    Indent indent{0};
-    os << Line(indent, "Transition {");
-    indent += 1;
-    os << Line(indent, "Initial State: " + tr.initialState);
-    os << Line(indent, "Condition: {");
-    indent += 1;
-    // FIXME
-    os << tr.condition;
-    indent -= 1;
-    os << Line(indent, "}");
-    os << Line(indent, "Steps: {");
-    indent += 1;
-    // TODO - Fixme
-    for (const auto &step : tr.steps) {
-        os << step << ", ";
-    }
-    indent -= 1;
-    os << Line(indent, "}");
-    os << Line(indent, "Final State: " + tr.finalState);
-    indent -= 1;
-    os << Line(indent, "}");
-    return os;
-}
-
 void dump(const Transition &tr, std::ostream &os, const Indent &indent) {
     os << Line(indent, "Transition {");
     os << Line(indent + 1, "Initial State: " + tr.initialState);
@@ -139,37 +66,6 @@ void dump(const Transition &tr, std::ostream &os, const Indent &indent) {
     os << Line(indent + 1, "}");
     os << Line(indent + 1, "Final State: " + tr.finalState);
     os << Line(indent, "}");
-}
-
-std::ostream &operator<<(std::ostream &os, const ParseTree &tree) {
-    Indent indent{0};
-    os << Line(indent, "ParseTree {");
-    indent += 1;
-    os << Line(indent, "Initial State: " + tree.initial_state);
-    os << Line(indent, "States: {");
-    indent += 1;
-    for (const auto &state : tree.states) {
-        os << Line(indent, state);
-    }
-    indent -= 1;
-    os << Line(indent, "}");
-    os << Line(indent, "Symbols: {");
-    indent += 1;
-    for (const auto &symbol : tree.symbols) {
-        os << Line(indent, symbol);
-    }
-    indent -= 1;
-    os << Line(indent, "}");
-    os << Line(indent, "Transitions: {");
-    indent += 1;
-    // TODO - Fixme
-    for (const auto &tr : tree.transitions) {
-        os << tr;
-    }
-    indent -= 1;
-    os << Line(indent, "}");
-    indent -= 1;
-    return os;
 }
 
 void dump(const ParseTree &tree, std::ostream &os, const Indent &indent) {

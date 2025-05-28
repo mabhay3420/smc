@@ -20,14 +20,11 @@ struct OR {
 };
 
 void dump(const Star &star, std::ostream &os, const Indent &indent);
-std::ostream &operator<<(std::ostream &os, const Star &star);
 void dump(const OR &orCond, std::ostream &os, const Indent &indent);
-std::ostream &operator<<(std::ostream &os, const OR &orCond);
 
 using Condition = std::variant<Star, OR>;
 void dump(const Condition &cond, std::ostream &os,
                    const Indent &indent);
-std::ostream &operator<<(std::ostream &os, const Condition &cond);
 
 struct R {};
 struct L {};
@@ -39,16 +36,9 @@ void dump(const R &r, std::ostream &os, const Indent &indent);
 void dump(const L &l, std::ostream &os, const Indent &indent);
 void dump(const X &x, std::ostream &os, const Indent &indent);
 void dump(const P &p, std::ostream &os, const Indent &indent);
-std::ostream &operator<<(std::ostream &os, const R &r);
-std::ostream &operator<<(std::ostream &os, const L &l);
-std::ostream &operator<<(std::ostream &os, const X &x);
-std::ostream &operator<<(std::ostream &os, const P &p);
-
 using TransitionStep = std::variant<R, L, X, P>;
 
 void dump(const TransitionStep &step, std::ostream &os, const Indent &indent);
-std::ostream &operator<<(std::ostream &os, const TransitionStep &step);
-
 // TODO : See if we can specify a concept (C++ 20)
 std::optional<TransitionStep> fromTokenAndValue(const lexer::Token &token,
                                                 const std::string &value = "");
@@ -66,8 +56,6 @@ class Transition {
 
 void dump(const Transition &tr, std::ostream &os, const Indent &indent);
 
-std::ostream &operator<<(std::ostream &os, const Transition &tr);
-
 class ParseTree {
   public:
     std::vector<std::string> states;
@@ -78,7 +66,6 @@ class ParseTree {
 
 void dump(const ParseTree &tree, std::ostream &os,
           const Indent &indent = Indent{0});
-std::ostream &operator<<(std::ostream &os, const ParseTree &tree);
 
 template <typename T> using optionalFnType = std::optional<std::function<T>>;
 
