@@ -2,11 +2,8 @@
 #include "llvmBackend.hpp"
 #include "parser.hpp"
 #include "utils.hpp"
-#include <nlohmann/json.hpp>
-// #include "llvm/ADT/StringRef.h"
-// #include "llvm/Support/raw_ostream.h"
 #include <memory>
-// #include <stdexcept>
+#include <nlohmann/json.hpp>
 using json = nlohmann::json;
 int main() {
     std::string fileName = "tests/examples/simple2.sm";
@@ -19,6 +16,5 @@ int main() {
     dump_json_to_file("misc/example.json", j);
     llvmBackend->getIr();
     dump_string_to_file("misc/a.ll", llvmBackend->ir);
-    // std::cout << "IR: " << llvmBackend->ir << std::endl;
     return 0;
 }

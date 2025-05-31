@@ -43,11 +43,3 @@ std::ostream &operator<<(std::ostream &os, const Indent &indent) {
     }
     return os;
 }
-
-// Takes a optional value
-// returns as it if it has value
-// otherwise gives a deafult
-// template <typename T>
-// T unwrap_or(std::optional<T> a, T b) {
-//     if(a.)
-// }

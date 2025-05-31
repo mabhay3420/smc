@@ -5,6 +5,13 @@
 #include <ostream>
 #include <string>
 
+// Ugly syntax for C++17 visitor pattern with std::variant
+template <class... Ts> struct overloaded : Ts... {
+    using Ts::operator()...;
+};
+template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
+// Done
+
 std::string read_file_to_string(const std::string &filename);
 
 void dump_json_to_file(const std::string &filename, const nlohmann::json &j);
