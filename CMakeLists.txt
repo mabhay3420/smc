@@ -16,11 +16,10 @@ add_executable(
     src/parser.cpp
     src/llvmBackend.cpp
 )
-
 target_link_libraries(
     smc
     PRIVATE
-    LLVMSupport
+    LLVMCore
     nlohmann_json::nlohmann_json
 )
 

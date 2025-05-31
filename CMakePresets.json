@@ -20,6 +20,19 @@
       }
     },
     {
+      "name": "common_debug",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "installDir": "${sourceDir}/install/${presetName}",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CT_LLVM_INSTALL_DIR": "~/projects/personal/llvm-project/build_debug",
+        "CMAKE_C_COMPILER": "/Users/mabhay/projects/personal/llvm-project/build/bin/clang",
+        "CMAKE_CXX_COMPILER": "/Users/mabhay/projects/personal/llvm-project/build/bin/clang++"
+      }
+    },
+    {
       "name": "release",
       "displayName": "Release build",
       "description": "Release build with optimizations",
@@ -33,7 +46,7 @@
       "name": "debug",
       "displayName": "Debug build",
       "description": "Debug build with debug symbols",
-      "inherits": "common",
+      "inherits": "common_debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_CXX_FLAGS": "-g -O0"

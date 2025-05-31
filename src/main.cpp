@@ -18,6 +18,7 @@ int main() {
     llvmBackend->dumpParseTree(j);
     dump_json_to_file("misc/example.json", j);
     llvmBackend->getIr();
-    std::cout << "IR: " << llvmBackend->ir << std::endl;
+    dump_string_to_file("misc/a.ll", llvmBackend->ir);
+    // std::cout << "IR: " << llvmBackend->ir << std::endl;
     return 0;
 }
