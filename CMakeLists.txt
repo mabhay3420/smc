@@ -14,6 +14,7 @@ add_executable(
     src/lexer.cpp
     src/utils.cpp
     src/parser.cpp
+    src/llvmBackend.cpp
 )
 
 target_link_libraries(

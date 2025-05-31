@@ -1,10 +1,16 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 #include <cstdint>
+#include <nlohmann/json.hpp>
 #include <ostream>
 #include <string>
 
 std::string read_file_to_string(const std::string &filename);
+
+void dump_json_to_file(const std::string &filename, const nlohmann::json &j);
+
+void dump_string_to_file(const std::string &filename,
+                         const std::string &content);
 class Indent {
   private:
     uint32_t s_width;
